@@ -13,20 +13,20 @@ s3 = session.resource('s3')
 def upload_to_s3(request):
     if request.method == 'POST':
         uploaded_file= request.FILES['documents']
-        """if uploaded_file is None:
+        """#if uploaded_file is None:
             return JsonResponse({'status': 'failed', 'message': 'file is null,Add file '}, safe=False)"""
         s3.Bucket(AWS_STORAGE_BUCKET_NAME).put_object(Key=uploaded_file.name,Body=uploaded_file)
         return JsonResponse({'status': 'success', 'message': 'file has been uploaded'}, safe=False)
 
 def get_file_path(request,pathurl):
     if request.method == 'GET':
-        if pathurl == "":
-            return JsonResponse({'status': 'success', 'message':"File Name not in URL"}, safe=False)
+        """if pathurl == "":
+            return JsonResponse({'status': 'failed', 'message':"File Name not in URL"}, safe=False)"""
         bucket = s3.Bucket(AWS_STORAGE_BUCKET_NAME)
         for object in bucket.objects.all():
             if object.key == pathurl:
                 url = "https://%s.%s.amazonaws.com/%s" % (AWS_STORAGE_BUCKET_NAME, AWS_S3_REGION_NAME, pathurl)
                 return JsonResponse({'status': 'success', 'message': url}, safe=False)
-        return JsonResponse({'status': 'success', 'message':"File Not Exists"}, safe=False)
+        return JsonResponse({'status': 'failed', 'message':"File Not Exists"}, safe=False)
 
 

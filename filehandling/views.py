@@ -1,4 +1,5 @@
 from django.http import JsonResponse, HttpResponse
+from django.utils.datastructures import MultiValueDictKeyError
 
 import boto3
 from cloudstorage.settings import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_STORAGE_BUCKET_NAME, AWS_S3_REGION_NAME
@@ -13,8 +14,9 @@ s3 = session.resource('s3')
 
 def upload_to_s3(request):
     if request.method == 'POST':
-        uploaded_file= request.FILES['documents']
-        if uploaded_file is None:
+        try:
+            uploaded_file= request.FILES['documents']
+        except MultiValueDictKeyError:
             return JsonResponse({'status': 'failed', 'message': 'file is null,Add file '}, safe=False)
         s3.Bucket(AWS_STORAGE_BUCKET_NAME).put_object(Key=uploaded_file.name,Body=uploaded_file)
         return JsonResponse({'status': 'success', 'message': 'file has been uploaded'}, safe=False)

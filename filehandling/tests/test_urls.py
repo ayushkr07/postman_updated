@@ -15,6 +15,6 @@ class TestUrls(SimpleTestCase):
         self.assertEquals(resolve(url).func,get_file_path)
 
     def test_get_file_no_path(self):
-        url=reverse('get_file_path')
+        url=reverse('get_file_paths')
         #print(resolve(url))
         self.assertEquals(resolve(url).func, get_file_path)

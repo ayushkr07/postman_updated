@@ -12,10 +12,6 @@ from filehandling.views import *
 class S3TestCase(unittest.TestCase):
 
     def setUp(self):
-        """
-        setUp will run before execution of each test case
-        """
-
         session = Session(aws_access_key_id=AWS_ACCESS_KEY_ID,
                           aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
                           region_name=AWS_S3_REGION_NAME)
@@ -23,15 +19,17 @@ class S3TestCase(unittest.TestCase):
         s3.Bucket(AWS_STORAGE_BUCKET_NAME).put_object(Key='style.css', Body='value')
 
         self.client=Client()
-        self.get_file_path_url=reverse('get_file_Path')
+        self.get_file_path_url=reverse('get_file_Path',args=['style.css'])
+        self.get_file_path_no_url = reverse('get_file_Paths')
+
+    @mock_s3
+    def test_get_file_no_path(self):
+        response = self.client.get(self.get_file_path_no_url)
+        self.assertEquals(response.status_code, 200)
 
 
     @mock_s3
     def test_get_file_path(self):
-        """
-        check the objects content is as expected
-        """
-
         response=self.client.get(self.get_file_path_url)
         self.assertEquals(response.status_code,200)
 
